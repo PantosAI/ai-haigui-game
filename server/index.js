@@ -186,7 +186,7 @@ app.post("/api/chat", handleChat);
 // Static files LAST (root index.html is Vite source only, never served here)
 const publicDir = path.resolve(__dirname, "../public_html");
 app.use(express.static(publicDir));
-app.get("*", (req, res) => res.sendFile(path.join(publicDir, "index.html")));
+app.get("/{*splat}", (req, res) => res.sendFile(path.join(publicDir, "index.html")));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, "0.0.0.0", () => {
