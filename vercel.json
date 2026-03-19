@@ -1,1 +1,1 @@
-{"buildCommand":"npm run build","outputDirectory":"dist","rewrites":[{"source":"/api/(.*)","destination":"https://ai-haigui-game-production.up.railway.app/api/$1"},{"source":"/(.*)","destination":"/index.html"}]}
+{"buildCommand":"npm run build","outputDirectory":"public_html","rewrites":[{"source":"/api/(.*)","destination":"https://ai-haigui-game-production.up.railway.app/api/$1"},{"source":"/(.*)","destination":"/index.html"}]}
