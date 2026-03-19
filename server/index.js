@@ -85,27 +85,15 @@ async function handleChat(req, res) {
       });
     }
 
-    if (!story || typeof story !== "object") {
-      return res.status(400).json({
-        error: { code: "BAD_REQUEST", message: "Invalid request: missing `story`." },
-      });
-    }
-
-    // 标题/内容（给 Prompt 使用）
-    const title = typeof story.title === "string" ? story.title : "";
-    const surface = typeof story.surface === "string" ? story.surface : "";
-    const bottom = typeof story.bottom === "string" ? story.bottom : "";
-
-    if (!title || !surface || !bottom) {
-      return res
-        .status(400)
-        .json({
-          error: {
-            code: "BAD_REQUEST",
-            message: "Invalid request: `story` must include `title`, `surface`, `bottom`.",
-          },
-        });
-    }
+    // story 缺失时给默认空对象，避免直接报错；兼容 surface/content、bottom/answer
+    const storyObj = story && typeof story === "object" ? story : {};
+    const title = typeof storyObj.title === "string" && storyObj.title.trim() ? storyObj.title.trim() : "未知故事";
+    const surface = typeof storyObj.surface === "string" && storyObj.surface.trim()
+      ? storyObj.surface.trim()
+      : (typeof storyObj.content === "string" && storyObj.content.trim() ? storyObj.content.trim() : "(无)");
+    const bottom = typeof storyObj.bottom === "string" && storyObj.bottom.trim()
+      ? storyObj.bottom.trim()
+      : (typeof storyObj.answer === "string" && storyObj.answer.trim() ? storyObj.answer.trim() : "(无)");
 
     // 从环境变量读取 DeepSeek 配置
     const API_KEY =
