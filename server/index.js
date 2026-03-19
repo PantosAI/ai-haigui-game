@@ -15,8 +15,16 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 const app = express();
 const serverStartAt = Date.now();
 
-// CORS: default cors() allows all origins
-app.use(cors());
+// CORS: most compatible mode (handles preflight OPTIONS)
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+// Explicitly handle all OPTIONS requests
 app.options("*", cors());
 
 const rootPackage = (() => {
