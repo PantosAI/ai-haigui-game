@@ -1,6 +1,0 @@
-[build]
-builder = "nixpacks"
-buildCommand = "npm install --no-optional && cd server && npm install --no-optional"
-
-[deploy]
-startCommand = "node server/index.js"
