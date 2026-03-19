@@ -49,18 +49,6 @@ app.get("/", (req, res) => {
   });
 });
 
-app.get("/api/test", (req, res) => {
-  console.log(
-    "📢 收到前端的测试请求了！时间：",
-    new Date().toLocaleString(),
-    "| ip：",
-    req.ip,
-    "| ua：",
-    req.get("user-agent") ?? ""
-  );
-  res.json({ message: "Server is Live!" });
-});
-
 function normalizeAIAnswer(raw) {
   // Strict check: only allow exact outputs after trimming.
   const s = String(raw ?? "").trim();
@@ -213,12 +201,16 @@ async function handleChat(req, res) {
   }
 }
 
-// Explicit OPTIONS for preflight (before POST)
-app.options("/api/chat", (req, res) => res.sendStatus(204));
-app.options("/chat", (req, res) => res.sendStatus(204));
-// POST /api/chat (frontend target)
-app.post("/api/chat", handleChat);
-app.post("/chat", handleChat);
+// API routes: all under /api, no static middleware before these
+const apiRouter = express.Router();
+apiRouter.get("/health", (req, res) => res.json({ status: "ok" }));
+apiRouter.get("/test", (req, res) => {
+  console.log("📢 收到前端的测试请求了！", new Date().toLocaleString());
+  res.json({ message: "Server is Live!" });
+});
+apiRouter.options("/chat", (req, res) => res.sendStatus(204));
+apiRouter.post("/chat", handleChat);
+app.use("/api", apiRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
