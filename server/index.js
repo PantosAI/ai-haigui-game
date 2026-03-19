@@ -13,7 +13,9 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env") });
 dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
 const app = express();
-const serverStartAt = Date.now();
+
+// /api/health FIRST - must not be intercepted by static or any other middleware
+app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 
 console.log("SERVER_IS_ALIVE_AT:", new Date());
 
@@ -174,7 +176,6 @@ async function handleChat(req, res) {
 }
 
 // ========== API ROUTES (must be above static) ==========
-app.get("/api/health", (req, res) => res.json({ status: "ok" }));
 app.get("/api/test", (req, res) => {
   console.log("📢 收到前端的测试请求了！", new Date().toLocaleString());
   res.json({ message: "Server is Live!" });
@@ -188,7 +189,7 @@ app.use(express.static(publicDir));
 app.get("*", (req, res) => res.sendFile(path.join(publicDir, "index.html")));
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server listening on http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server listening on http://0.0.0.0:${PORT}`);
 });
 
