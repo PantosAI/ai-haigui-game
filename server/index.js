@@ -17,7 +17,7 @@ const serverStartAt = Date.now();
 
 console.log("SERVER_IS_ALIVE_AT:", new Date());
 
-// Middleware first (top of stack, before any routes)
+// Middleware required for API
 app.use(cors({ origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], allowedHeaders: ["Content-Type", "Authorization"] }));
 app.use(express.json());
 
@@ -173,18 +173,16 @@ async function handleChat(req, res) {
   }
 }
 
-// API routes: all under /api, no static middleware before these
-const apiRouter = express.Router();
-apiRouter.get("/health", (req, res) => res.json({ status: "ok" }));
-apiRouter.get("/test", (req, res) => {
+// ========== API ROUTES (must be above static) ==========
+app.get("/api/health", (req, res) => res.json({ status: "ok" }));
+app.get("/api/test", (req, res) => {
   console.log("📢 收到前端的测试请求了！", new Date().toLocaleString());
   res.json({ message: "Server is Live!" });
 });
-apiRouter.options("/chat", (req, res) => res.sendStatus(204));
-apiRouter.post("/chat", handleChat);
-app.use("/api", apiRouter);
+app.options("/api/chat", (req, res) => res.sendStatus(204));
+app.post("/api/chat", handleChat);
 
-// Static files LAST - only after all API routes, so /api/* is never hijacked
+// Static files LAST (root index.html is Vite source only, never served here)
 const publicDir = path.resolve(__dirname, "../public_html");
 app.use(express.static(publicDir));
 app.get("*", (req, res) => res.sendFile(path.join(publicDir, "index.html")));
