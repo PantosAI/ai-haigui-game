@@ -11,11 +11,8 @@ export async function askAI({ storyId, question, signal }: AskAIParams): Promise
   const story = stories.find((s) => s.id === storyId)
   if (!story) throw new Error(`Unknown storyId: ${storyId}`)
 
-  const BASE_URL = 'https://ai-haigui-game-production.up.railway.app/api'
-  const apiUrl = `${BASE_URL}/chat`
-
   console.log('前端正在发起请求到后端...');
-  const res = await fetch(apiUrl, {
+  const res = await fetch('https://ai-haigui-game-production.up.railway.app/api/chat', {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
