@@ -15,12 +15,12 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 const app = express();
 const serverStartAt = Date.now();
 
-// CORS: single middleware at top, before all routes
+// Middleware first (top of stack, before any routes)
 app.use(cors({ origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], allowedHeaders: ["Content-Type", "Authorization"] }));
+app.use(express.json());
 
 const rootPackage = (() => {
   try {
-    // /server/index.js -> /package.json
     return require("../package.json");
   } catch {
     return {};
@@ -33,9 +33,6 @@ const serverPackage = (() => {
     return {};
   }
 })();
-
-// Parse JSON request bodies
-app.use(express.json());
 
 app.get("/", (req, res) => {
   const name = rootPackage?.name ?? serverPackage?.name ?? "unknown-project";
@@ -228,6 +225,10 @@ async function handleChat(req, res) {
   }
 }
 
+// Explicit OPTIONS for preflight (before POST)
+app.options("/api/chat", (req, res) => res.sendStatus(204));
+app.options("/chat", (req, res) => res.sendStatus(204));
+// POST /api/chat (frontend target)
 app.post("/api/chat", handleChat);
 app.post("/chat", handleChat);
 
