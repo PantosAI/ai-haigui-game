@@ -15,6 +15,15 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 const app = express();
 const serverStartAt = Date.now();
 
+// CORS: allow all origins (must be before other middleware)
+app.use(
+  cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
 const rootPackage = (() => {
   try {
     // /server/index.js -> /package.json
@@ -33,9 +42,6 @@ const serverPackage = (() => {
 
 // Parse JSON request bodies
 app.use(express.json());
-
-// Enable cross-origin requests
-app.use(cors());
 
 app.get("/", (req, res) => {
   const name = rootPackage?.name ?? serverPackage?.name ?? "unknown-project";
