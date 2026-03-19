@@ -11,8 +11,11 @@ export async function askAI({ storyId, question, signal }: AskAIParams): Promise
   const story = stories.find((s) => s.id === storyId)
   if (!story) throw new Error(`Unknown storyId: ${storyId}`)
 
+  const BASE_URL = import.meta.env.VITE_API_URL || ''
+  const apiUrl = BASE_URL ? `${BASE_URL.replace(/\/+$/, '')}/chat` : '/api/chat'
+
   console.log('前端正在发起请求到后端...');
-  const res = await fetch('/api/chat', {
+  const res = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'content-type': 'application/json',
