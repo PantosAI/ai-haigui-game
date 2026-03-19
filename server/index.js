@@ -15,17 +15,8 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 const app = express();
 const serverStartAt = Date.now();
 
-// CORS: most compatible mode (handles preflight OPTIONS)
-app.use(
-  cors({
-    origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
-
-// Explicitly handle all OPTIONS requests
-app.options("*", cors());
+// CORS: single middleware at top, before all routes
+app.use(cors({ origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], allowedHeaders: ["Content-Type", "Authorization"] }));
 
 const rootPackage = (() => {
   try {
@@ -80,7 +71,7 @@ function normalizeAIAnswer(raw) {
   return "无关";
 }
 
-app.post("/api/chat", async (req, res) => {
+async function handleChat(req, res) {
   try {
     const { question, story } = req.body ?? {};
     const ts = new Date().toLocaleString();
@@ -235,7 +226,10 @@ app.post("/api/chat", async (req, res) => {
       },
     });
   }
-});
+}
+
+app.post("/api/chat", handleChat);
+app.post("/chat", handleChat);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
