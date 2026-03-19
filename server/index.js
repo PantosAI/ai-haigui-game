@@ -15,39 +15,11 @@ dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 const app = express();
 const serverStartAt = Date.now();
 
+console.log("SERVER_IS_ALIVE_AT:", new Date());
+
 // Middleware first (top of stack, before any routes)
 app.use(cors({ origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], allowedHeaders: ["Content-Type", "Authorization"] }));
 app.use(express.json());
-
-const rootPackage = (() => {
-  try {
-    return require("../package.json");
-  } catch {
-    return {};
-  }
-})();
-const serverPackage = (() => {
-  try {
-    return require("./package.json");
-  } catch {
-    return {};
-  }
-})();
-
-app.get("/", (req, res) => {
-  const name = rootPackage?.name ?? serverPackage?.name ?? "unknown-project";
-  const version = rootPackage?.version ?? serverPackage?.version ?? "unknown-version";
-
-  res.json({
-    name,
-    version,
-    server: {
-      status: "running",
-      uptimeSeconds: Math.floor(process.uptime()),
-      startedAt: new Date(serverStartAt).toISOString(),
-    },
-  });
-});
 
 function normalizeAIAnswer(raw) {
   // Strict check: only allow exact outputs after trimming.
@@ -211,6 +183,11 @@ apiRouter.get("/test", (req, res) => {
 apiRouter.options("/chat", (req, res) => res.sendStatus(204));
 apiRouter.post("/chat", handleChat);
 app.use("/api", apiRouter);
+
+// Static files LAST - only after all API routes, so /api/* is never hijacked
+const publicDir = path.resolve(__dirname, "../public_html");
+app.use(express.static(publicDir));
+app.get("*", (req, res) => res.sendFile(path.join(publicDir, "index.html")));
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
