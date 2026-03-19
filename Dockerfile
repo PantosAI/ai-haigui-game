@@ -7,7 +7,7 @@ COPY server/package.json server/
 
 COPY . .
 
-RUN npm install --no-optional && npm run build && cd server && npm install
+RUN npm install && npm run build && cd server && npm install
 
 EXPOSE 3000
 
