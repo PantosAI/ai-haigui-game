@@ -255,6 +255,35 @@ Vibe Coding 降低了写代码的门槛，但**理解系统、读懂错误、精
 
 ---
 
+## API Key 安全管理
+
+**踩坑经历：**
+DeepSeek API Key 被提交到了公开的 GitHub 仓库，触发了 Secret scanning 告警（Public leak）。
+GitHub Secret scanning 的告警截图如下所示（告警显示 sk-0ea60f5dd713404ba4dfa... 被检测到泄露在 server/.env 第1行，标记为 Public leak）。
+
+**根本原因：**
+.gitignore 中没有包含 .env，导致 server/.env 被 Git 追踪并上传。
+注意：*.local 只能匹配 .env.local，不能匹配 .env 本身。
+
+**正确做法：**
+1. 创建 .env 文件之前，先确认 .gitignore 里已经有 .env 相关规则
+2. .gitignore 中应包含：
+   .env
+   .env.*
+   server/.env
+3. 用 git ls-files | grep env 检查有没有 env 文件被追踪
+
+**处理泄露的步骤：**
+1. 立即去 API 平台作废泄露的 Key
+2. git rm --cached <泄露的文件>
+3. git commit & push
+4. 更新 .env 文件写入新 Key
+5. 关闭 GitHub Secret scanning 告警
+
+**记住这句话：有 Key 的文件，在第一次 git add 之前，先确认 .gitignore 里有没有它。**
+
+---
+
 *第一次用 Git 部署上线的纪念 🐢*  
 *2026年3月20日*  
 *历时：Gemini 3小时 + Claude 3分钟 = 一次难忘的认知升级*
