@@ -31,3 +31,12 @@ Key 只存在后端，前端永远看不到，这才是安全的做法
 所以要先在 Cursor 终端执行：
 git pull
 把 GitHub 上你刚加的内容同步到本地，然后再跑 Composer，这样就不会冲突了。
+
+
+
+
+Cloudflare 的完整方案是：
+Pages — 前端（类似 Vercel）
+Workers — 后端（类似 Railway）
+Pages + Workers 结合 — 就等于 Vercel + Railway 的组合
+
