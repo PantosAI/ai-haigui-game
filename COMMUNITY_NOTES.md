@@ -26,3 +26,8 @@ Advanced Security 会被禁用 — 就是今天帮你发现 Key 泄露的 Secret
 所以正确架构就是：
 用户 → 前端（Vercel）→ 后端（Railway）→ DeepSeek API
 Key 只存在后端，前端永远看不到，这才是安全的做法
+
+在 GitHub 网页上直接编辑了文件，但还没有同步到本地 Cursor。如果现在直接在 Cursor 里跑 Composer，本地的文件比 GitHub 旧，push 的时候会报错。
+所以要先在 Cursor 终端执行：
+git pull
+把 GitHub 上你刚加的内容同步到本地，然后再跑 Composer，这样就不会冲突了。
