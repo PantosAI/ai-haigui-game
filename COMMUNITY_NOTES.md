@@ -20,3 +20,9 @@ GitHub 在提醒你改成 private 之后会有三个影响，逐条解释：
 Dependabot 自定义告警规则会被禁用 — Dependabot 就是之前帮你扫描依赖漏洞的机器人，改成 private 后它的一些高级功能会关掉。对你影响不大，基础功能还在。
 现有的 fork 会保持 public 并与这个仓库断开 — 就是说如果有人 fork 了你的仓库，改成 private 不会影响他们那份，但会断开关联。你这个仓库 0 stars 0 watchers，应该没人 fork，所以无影响。
 Advanced Security 会被禁用 — 就是今天帮你发现 Key 泄露的 Secret scanning！改成 private 之后这个功能就没了。
+
+
+前端绝对不能存 Key，原因很简单：前端代码是运行在用户浏览器里的，任何人打开浏览器开发者工具都能看到，等于公开给所有人了，比提交到 GitHub 还危险。
+所以正确架构就是：
+用户 → 前端（Vercel）→ 后端（Railway）→ DeepSeek API
+Key 只存在后端，前端永远看不到，这才是安全的做法
